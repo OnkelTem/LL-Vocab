@@ -1,11 +1,20 @@
 global:
   buildName: 'LLVocab'
   deckGroup: ''
-  deckName: 'LLVocab'
+  deckName: 'En-Da Vocab'
   deckCode: '@global.buildName'
   url: {field: githuburl, path: 'bundle://', failsafe: true}
   noteMatch: {field: file, path: 'bundle://notematch.json', format: json}
-  data:
+  fieldsDef:
+    field: each
+    source: '@global.noteMatch'
+    do:
+      value:
+        field: each
+        source: '@input.fields'
+        do:
+          value: '@input'
+  filesDef:
     field: each
     source: '@global.noteMatch'
     do:
@@ -21,8 +30,8 @@ global:
               path: {field: concat, items: ['bundle://', '@input']}
   dataset:
     field: balance
-    source: '@global.data'
-    levels: ['type', 'path', '' ]
+    source: '@global.filesDef'
+    levels: ['type', 'path', '']
 
 generators:
   Build:
@@ -40,11 +49,17 @@ generators:
       - worker: group
         from: row
         by: [ 'type' ]
+      - worker: process
+        merge: merge
+        fields:
+          noteMatch: {field: subscript, source: '@global.noteMatch', index: '@row.type'}
+          deckName: {field: concat, items: ['@global.deckName', '@fields.noteMatch.name'], glue: ' '}
+          fieldNames: '@fields.noteMatch.fields'
       - worker: crowdankidecks
         build: {field: concat, items: ['build://', '@global.buildName', '-', '@row.type']}
         deck:
           uuid: {field: uuid}
-          name: {field: concat, items: ['@global.deckGroup', '@row.type', '@global.deckName'], glue: '::', filter: true}
+          name: {field: concat, items: ['@global.deckGroup', '@row.deckName'], glue: '::', filter: true}
           desc:
             field: twig
             template: {field: file, path: 'bundle://desc.twig'}
@@ -52,7 +67,7 @@ generators:
           uuid: {field: uuid, persistent: '@global.deckName'}
           name: '@global.deckName'
         model:
-          uuid: {field: uuid}
+          uuid: {field: uuid, persistent: '@row.deckName'}
           name: {field: concat, items: ['@global.deckName', '@row.type'], glue: '-'}
           templates:
             main:
@@ -60,14 +75,14 @@ generators:
               template: {field: file, path: 'bundle://main.twig'}
           css: {field: file, path: 'bundle://main.css'}
         notes:
-          rows: '@row.items'
+          source: '@row.items'
           as: 'note'
           each:
-            fields:
-              Word: '@note.Word'
-              Danish: '@note.Danish'
-            guid:
-              field: guid
+            note:
+              field: selectkeys
+              source: '@note'
+              keys: '@row.fieldNames'
+            guid: {field: guid}
         defaults:
           config:
             new:

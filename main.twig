@@ -1,4 +1,15 @@
 <div id="card" class="q">
+  <h2>
+    {% if row.type == 'LLWord' %}
+      LLWord
+    {% endif %}
+    {% if row.type == 'LLNoun' %}
+      LLNoun
+    {% endif %}
+    {% if row.type == 'LLVerb' %}
+      LLVerb
+    {% endif %}
+  </h2>
   {{'{{'}}Word{{'}}'}}
 </div>
 

@@ -1,20 +1,49 @@
 {
+  "LLWord": {
+    "name": "words",
+    "files": [],
+    "fields": [
+      "Word",
+      "Danish",
+      "Danish Audio",
+      "Esperanto",
+      "Esperanto Audio",
+      "Picture",
+      "Extra"
+    ]
+  },
   "LLNoun": {
+    "name": "nouns",
     "files": [
       "src/nouns/DanishNouns.csv",
       "src/nouns/DanishNouns2.csv"
     ],
     "fields": [
+      "Word",
+      "Danish",
+      "Danish Audio",
+      "Esperanto",
+      "Esperanto Audio",
+      "Picture",
+      "Extra",
       "Plural",
       "Definite Plural",
       "Indefinite Plural"
     ]
   },
   "LLVerb": {
+    "name": "verbs",
     "files": [
       "src/verbs/DanishVerbs.csv"
     ],
     "fields": [
+      "Word",
+      "Danish",
+      "Danish Audio",
+      "Esperanto",
+      "Esperanto Audio",
+      "Picture",
+      "Extra",
       "Present",
       "Past",
       "Past Perfect"
