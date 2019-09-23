@@ -1,0 +1,23 @@
+{
+  "LLNoun": {
+    "files": [
+      "src/nouns/DanishNouns.csv",
+      "src/nouns/DanishNouns2.csv"
+    ],
+    "fields": [
+      "Plural",
+      "Definite Plural",
+      "Indefinite Plural"
+    ]
+  },
+  "LLVerb": {
+    "files": [
+      "src/verbs/DanishVerbs.csv"
+    ],
+    "fields": [
+      "Present",
+      "Past",
+      "Past Perfect"
+    ]
+  }
+}

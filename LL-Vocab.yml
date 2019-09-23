@@ -1,0 +1,77 @@
+global:
+  buildName: 'LLVocab'
+  deckGroup: ''
+  deckName: 'LLVocab'
+  deckCode: '@global.buildName'
+  url: {field: githuburl, path: 'bundle://', failsafe: true}
+  noteMatch: {field: file, path: 'bundle://notematch.json', format: json}
+  data:
+    field: each
+    source: '@global.noteMatch'
+    do:
+      value:
+        field: each
+        source: '@input.files'
+        do:
+          key: '@input'
+          value:
+            field: csv
+            data:
+              field: file
+              path: {field: concat, items: ['bundle://', '@input']}
+  dataset:
+    field: balance
+    source: '@global.data'
+    levels: ['type', 'path', '' ]
+
+generators:
+  Build:
+    workers:
+      - worker: csv
+        data: {field: file, path: 'bundle://src/main.csv'}
+      - worker: join
+        merge: merge
+        join: '@global.dataset'
+        on:
+          Word: '@row.Word'
+          Danish: '@row.Danish'
+        else:
+          type: "LLWord"
+      - worker: group
+        from: row
+        by: [ 'type' ]
+      - worker: crowdankidecks
+        build: {field: concat, items: ['build://', '@global.buildName', '-', '@row.type']}
+        deck:
+          uuid: {field: uuid}
+          name: {field: concat, items: ['@global.deckGroup', '@row.type', '@global.deckName'], glue: '::', filter: true}
+          desc:
+            field: twig
+            template: {field: file, path: 'bundle://desc.twig'}
+        config:
+          uuid: {field: uuid, persistent: '@global.deckName'}
+          name: '@global.deckName'
+        model:
+          uuid: {field: uuid}
+          name: {field: concat, items: ['@global.deckName', '@row.type'], glue: '-'}
+          templates:
+            main:
+              field: twig
+              template: {field: file, path: 'bundle://main.twig'}
+          css: {field: file, path: 'bundle://main.css'}
+        notes:
+          rows: '@row.items'
+          as: 'note'
+          each:
+            fields:
+              Word: '@note.Word'
+              Danish: '@note.Danish'
+            guid:
+              field: guid
+        defaults:
+          config:
+            new:
+              order: 0
+              perDay: 100
+          model:
+            req: [[0, 'all', [2]]]

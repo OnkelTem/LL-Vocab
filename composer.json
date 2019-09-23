@@ -1,0 +1,10 @@
+{
+  "name": "ohare93/LL-Vocab",
+  "description": "LL-Vocab",
+  "type": "datamincer-bundle",
+  "minimum-stability": "dev",
+  "require": {
+    "datamincer/plugins": "dev-master",
+    "datamincer/crowdanki": "dev-master"
+  }
+}
